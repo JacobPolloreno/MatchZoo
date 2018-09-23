@@ -139,6 +139,7 @@ class BaseModel(abc.ABC):
     def fit_generator(
         self,
         generator: 'engine.BaseGenerator',
+        val_generator: 'engine.BaseGenerator'=None,
         steps_per_epoch: int = None,
         epochs: int = 1,
         verbose: int = 1
@@ -162,6 +163,7 @@ class BaseModel(abc.ABC):
         return self._backend.fit_generator(generator=generator,
                                            steps_per_epoch=steps_per_epoch,
                                            epochs=epochs,
+                                           validation_data=val_generator,
                                            verbose=verbose)
 
     def evaluate(
@@ -189,10 +191,36 @@ class BaseModel(abc.ABC):
         return self._backend.evaluate(x=x, y=y,
                                       batch_size=batch_size, verbose=verbose)
 
+    def evaluate_generator(
+            self,
+            generator: 'engine.BaseGenerator',
+            steps: int = None,
+            verbose: int = 1
+    ) -> typing.Union[float, typing.List[float]]:
+        """
+        Evaluate the model.
+
+        See :meth:`keras.models.Model.evaluate` for more details.
+
+        :param x: input data
+        :param y: labels
+        :param batch_size: number of samples per gradient update
+        :param verbose: verbosity mode, 0 or 1
+        :return: scalar test loss (if the model has a single output and no
+            metrics) or list of scalars (if the model has multiple outputs
+            and/or metrics). The attribute `model.backend.metrics_names` will
+            give you the display labels for the scalar outputs.
+
+        """
+        return self._backend.evaluate_generator(generator=generator,
+                                                steps=steps,
+                                                verbose=verbose)
+
     def predict(
             self,
             x: typing.Union[np.ndarray, typing.List[np.ndarray]],
-            batch_size=128
+            batch_size=128,
+            verbose: int=1
     ) -> np.ndarray:
         """
         Generate output predictions for the input samples.
@@ -201,9 +229,12 @@ class BaseModel(abc.ABC):
 
         :param x: input data
         :param batch_size: number of samples per gradient update
+        :param verbose: verbosity mode, 0 or 1
         :return: numpy array(s) of predictions
         """
-        return self._backend.predict(x=x, batch_size=batch_size)
+        return self._backend.predict(x=x,
+                                     batch_size=batch_size,
+                                     verbose=verbose)
 
     def save(self, dirpath: typing.Union[str, Path]):
         """

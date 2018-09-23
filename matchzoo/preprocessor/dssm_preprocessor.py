@@ -122,7 +122,7 @@ class DSSMPreprocessor(engine.BasePreprocessor):
 
         :return: Transformed data as :class:`DataPack` object.
         """
-        if stage not in ['train', 'test']:
+        if stage not in ['train', 'test', 'predict']:
             raise ValueError(f'{stage} is not a valid stage name.')
         if not self._context.get('term_index'):
             raise ValueError(
@@ -148,7 +148,7 @@ class DSSMPreprocessor(engine.BasePreprocessor):
             # do preprocessing from scrach.
             units = self._prepare_stateless_units()
             units.append(hashing)
-            self._datapack = self.segmentation(inputs, stage='test')
+            self._datapack = self.segmentation(inputs, stage=stage)
 
             left = self._datapack.left
             right = self._datapack.right

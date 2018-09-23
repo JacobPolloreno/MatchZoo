@@ -55,7 +55,7 @@ class BasePreprocessor(metaclass=abc.ABCMeta):
         else:
             return self.transform(inputs, stage)
 
-    def save(self, dirpath: typing.Union[str, Path]):
+    def save(self, dirpath: typing.Union[str, Path], filename: Path=None):
         """
         Save the :class:`DSSMPreprocessor` object.
 
@@ -66,7 +66,10 @@ class BasePreprocessor(metaclass=abc.ABCMeta):
         :param dirpath: directory path of the saved :class:`DSSMPreprocessor`.
         """
         dirpath = Path(dirpath)
-        data_file_path = dirpath.joinpath(self.DATA_FILENAME)
+        if filename:
+            data_file_path = dirpath.joinpath(filename)
+        else:
+            data_file_path = dirpath.joinpath(self.DATA_FILENAME)
 
         if data_file_path.exists():
             raise FileExistsError
@@ -97,7 +100,12 @@ class BasePreprocessor(metaclass=abc.ABCMeta):
             col_all.append('label')
 
         # prepare data pack.
-        inputs = pd.DataFrame(inputs, columns=col_all)
+        if stage == 'predict':
+            col_predict = ['id_right', 'text_right', 'id_left', 'text_left']
+            inputs = pd.DataFrame(inputs, columns=col_predict)
+            inputs = inputs[col_all]
+        else:
+            inputs = pd.DataFrame(inputs, columns=col_all)
 
         # Segment input into 3 dataframes.
         relation = inputs[col_relation]

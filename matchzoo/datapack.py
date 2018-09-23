@@ -106,7 +106,8 @@ class DataPack(object):
         """Set the value of :attr:`context`."""
         self._context = value
 
-    def save(self, dirpath: typing.Union[str, Path]):
+    def save(self, dirpath: typing.Union[str, Path],
+             filename: Path=None):
         """
         Save the :class:`DataPack` object.
 
@@ -117,7 +118,10 @@ class DataPack(object):
         :param dirpath: directory path of the saved :class:`DataPack`.
         """
         dirpath = Path(dirpath)
-        data_file_path = dirpath.joinpath(self.DATA_FILENAME)
+        if filename:
+            data_file_path = dirpath.joinpath(filename)
+        else:
+            data_file_path = dirpath.joinpath(self.DATA_FILENAME)
 
         if data_file_path.exists():
             raise FileExistsError
@@ -127,7 +131,7 @@ class DataPack(object):
         dill.dump(self, open(data_file_path, mode='wb'))
 
 
-def load_datapack(dirpath: typing.Union[str, Path]) -> DataPack:
+def load_datapack(dirpath: typing.Union[str, Path], filename: Path=None) -> DataPack:
     """
     Load a :class:`DataPack`. The reverse function of :meth:`save`.
 
@@ -136,7 +140,10 @@ def load_datapack(dirpath: typing.Union[str, Path]) -> DataPack:
     """
     dirpath = Path(dirpath)
 
-    data_file_path = dirpath.joinpath(DataPack.DATA_FILENAME)
+    if filename:
+        data_file_path = dirpath.joinpath(filename)
+    else:
+        data_file_path = dirpath.joinpath(DataPack.DATA_FILENAME)
     dp = dill.load(open(data_file_path, 'rb'))
 
     return dp

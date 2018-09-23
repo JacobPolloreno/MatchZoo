@@ -74,7 +74,7 @@ class PointGenerator(engine.BaseGenerator):
         :param index_array: a list of instance ids.
         :return: A batch of transformed samples.
         """
-        batch_x = {}
+        batch_x: typing.Dict = {}
         batch_y = None
 
         columns = self._left.columns.values.tolist() + \
@@ -85,8 +85,9 @@ class PointGenerator(engine.BaseGenerator):
         # Create label field.
         if self.stage == 'train':
             if isinstance(self._task, tasks.Ranking):
-                batch_y = map(self._task.output_dtype, self._relation['label'])
-                batch_y = np.array(batch_y)
+                batch_y = map(self._task.output_dtype,
+                              self._relation['label'][index_array])
+                batch_y = np.array(list(batch_y))
             elif isinstance(self._task, tasks.Classification):
                 batch_y = np.zeros((len(index_array), self._task.num_classes))
                 for idx, label in enumerate(
