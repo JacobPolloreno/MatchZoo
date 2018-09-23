@@ -1,11 +1,13 @@
 language: python
 python:
-      - "2.7"
-      - "3.6"
-sudo: false
-script:
-  - make init 
-  - make test
-env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR/tests:$TRAVIS_BUILD_DIR/matchzoo
+      - 3.6.3
+sudo: enabled
 install:
-  - python setup.py install
+  - "pip install -r requirements.txt"
+  - "python -m nltk.downloader punkt"
+  - "python -m nltk.downloader wordnet"
+  - "python -m nltk.downloader stopwords"
+script: make test
+env: PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR/tests:$TRAVIS_BUILD_DIR/matchzoo
+after_success:
+      - codecov
