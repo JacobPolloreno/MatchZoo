@@ -8,7 +8,8 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 # Avoids IDE errors, but actual version is read from version.py
 __version__ = None
-exec(open('matchzoo/version.py').read())
+pkg = os.path.join(here, 'matchzoo')
+exec(open(os.path.join(pkg, 'version.py')).read())
 
 # Get the long description from the README file
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
