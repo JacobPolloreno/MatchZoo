@@ -107,7 +107,7 @@ class DataPack(object):
         self._context = value
 
     def save(self, dirpath: typing.Union[str, Path],
-             filename: Path=None):
+             name: str=None):
         """
         Save the :class:`DataPack` object.
 
@@ -118,8 +118,8 @@ class DataPack(object):
         :param dirpath: directory path of the saved :class:`DataPack`.
         """
         dirpath = Path(dirpath)
-        if filename:
-            data_file_path = dirpath.joinpath(filename)
+        if name:
+            data_file_path = dirpath.joinpath(f"{name}.dill")
         else:
             data_file_path = dirpath.joinpath(self.DATA_FILENAME)
 
@@ -131,7 +131,7 @@ class DataPack(object):
         dill.dump(self, open(data_file_path, mode='wb'))
 
 
-def load_datapack(dirpath: typing.Union[str, Path], filename: Path=None) -> DataPack:
+def load_datapack(dirpath: typing.Union[str, Path], name: str=None) -> DataPack:
     """
     Load a :class:`DataPack`. The reverse function of :meth:`save`.
 
@@ -140,8 +140,8 @@ def load_datapack(dirpath: typing.Union[str, Path], filename: Path=None) -> Data
     """
     dirpath = Path(dirpath)
 
-    if filename:
-        data_file_path = dirpath.joinpath(filename)
+    if name:
+        data_file_path = dirpath.joinpath(f"{name}.dill")
     else:
         data_file_path = dirpath.joinpath(DataPack.DATA_FILENAME)
     dp = dill.load(open(data_file_path, 'rb'))

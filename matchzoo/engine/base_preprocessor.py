@@ -55,7 +55,7 @@ class BasePreprocessor(metaclass=abc.ABCMeta):
         else:
             return self.transform(inputs, stage)
 
-    def save(self, dirpath: typing.Union[str, Path], filename: Path=None):
+    def save(self, dirpath: typing.Union[str, Path], name: str=None):
         """
         Save the :class:`DSSMPreprocessor` object.
 
@@ -66,8 +66,8 @@ class BasePreprocessor(metaclass=abc.ABCMeta):
         :param dirpath: directory path of the saved :class:`DSSMPreprocessor`.
         """
         dirpath = Path(dirpath)
-        if filename:
-            data_file_path = dirpath.joinpath(filename)
+        if name:
+            data_file_path = dirpath.joinpath(f"{name}_preprocessor.dill")
         else:
             data_file_path = dirpath.joinpath(self.DATA_FILENAME)
 
@@ -123,7 +123,7 @@ class BasePreprocessor(metaclass=abc.ABCMeta):
                                  right=right)
 
 
-def load_preprocessor(dirpath: typing.Union[str, Path]) -> datapack.DataPack:
+def load_preprocessor(dirpath: typing.Union[str, Path], name: str=None) -> datapack.DataPack:
     """
     Load the fitted `context`. The reverse function of :meth:`save`.
 
@@ -132,7 +132,10 @@ def load_preprocessor(dirpath: typing.Union[str, Path]) -> datapack.DataPack:
     """
     dirpath = Path(dirpath)
 
-    data_file_path = dirpath.joinpath(BasePreprocessor.DATA_FILENAME)
+    if name:
+        data_file_path = dirpath.joinpath(f"{name}_preprocessor.dill")
+    else:
+        data_file_path = dirpath.joinpath(BasePreprocessor.DATA_FILENAME)
     dp = dill.load(open(data_file_path, 'rb'))
 
     return dp

@@ -236,7 +236,7 @@ class BaseModel(abc.ABC):
                                      batch_size=batch_size,
                                      verbose=verbose)
 
-    def save(self, dirpath: typing.Union[str, Path]):
+    def save(self, dirpath: typing.Union[str, Path], name: str=None):
         """
         Save the model.
 
@@ -247,8 +247,12 @@ class BaseModel(abc.ABC):
         :param dirpath: directory path of the saved model
         """
         dirpath = Path(dirpath)
-        backend_file_path = dirpath.joinpath(self.BACKEND_FILENAME)
-        params_file_path = dirpath.joinpath(self.PARAMS_FILENAME)
+        if name:
+            backend_file_path = dirpath.joinpath(f"{name}.h5")
+            params_file_path = dirpath.joinpath(f"{name}_params.dill")
+        else:
+            backend_file_path = dirpath.joinpath(self.BACKEND_FILENAME)
+            params_file_path = dirpath.joinpath(self.PARAMS_FILENAME)
 
         if backend_file_path.exists() or params_file_path.exists():
             raise FileExistsError
@@ -298,7 +302,8 @@ class BaseModel(abc.ABC):
             raise ValueError("Invalid task type.")
 
 
-def load_model(dirpath: typing.Union[str, Path]) -> BaseModel:
+def load_model(dirpath: typing.Union[str, Path],
+               name: str=None) -> BaseModel:
     """
     Load a model. The reverse function of :meth:`BaseModel.save`.
 
@@ -307,10 +312,16 @@ def load_model(dirpath: typing.Union[str, Path]) -> BaseModel:
     """
     dirpath = Path(dirpath)
 
-    backend_file_path = dirpath.joinpath(BaseModel.BACKEND_FILENAME)
+    if name:
+        backend_file_path = dirpath.joinpath(f"{name}.h5")
+    else:
+        backend_file_path = dirpath.joinpath(BaseModel.BACKEND_FILENAME)
     backend = keras.models.load_model(backend_file_path)
 
-    params_file_path = dirpath.joinpath(BaseModel.PARAMS_FILENAME)
+    if name:
+        params_file_path = dirpath.joinpath(f"{name}_params.dill")
+    else:
+        params_file_path = dirpath.joinpath(BaseModel.PARAMS_FILENAME)
     params = dill.load(open(params_file_path, 'rb'))
 
     return params['model_class'](params=params, backend=backend)
