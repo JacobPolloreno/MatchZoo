@@ -165,3 +165,22 @@ class DSSMPreprocessor(engine.BasePreprocessor):
                 self._datapack.right.at[idx, 'text_right'] = text
 
             return self._datapack
+
+    def transform_list(self,
+                       inputs: typing.List[str]):
+
+        data = []
+
+        # prepare word hashing unit.
+        hashing = preprocessor.WordHashingUnit(
+            self._context['term_index'])
+
+        units = self._prepare_stateless_units()
+        units.append(hashing)
+
+        for doc in inputs:
+            for unit in units:
+                doc = unit.transform(doc)
+            data.append(doc)
+
+        return data
